@@ -21,6 +21,12 @@ This package is an extension for ***ggplot2*** package (in the same manner as pa
 **batlight.nb.html**: rendered POC Rmd file, i.e. R Notebook    
 
 ## Daily Logs<a name="logs"></a>
+### 08/04/2018
+* Added **batlight_v1.R** script. Attempt to use **ggproto** framework. 
+
+### 08/03/2018
+* Added Andrew's script **You Rock**.
+
 ### 05/16/2018
 * Repository created
 
