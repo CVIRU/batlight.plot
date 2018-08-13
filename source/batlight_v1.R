@@ -11,6 +11,8 @@
 # https://github.com/tidyverse/ggplot2/blob/master/vignettes/extending-ggplot2.Rmd
 # Best reference
 # https://stackoverflow.com/questions/36156387/how-to-make-a-custom-ggplot2-geom-with-multiple-geometries
+# NOTE: use 'roxigen2' pacakge to create folder structure for the package;
+# use 'packrat' to version control your dependencies.
 
 # Load dependencies----
 require(ggplot2)
@@ -23,9 +25,7 @@ require(grid)
 GeomBatlight <- ggproto("GeomBatlight", 
                         Geom,
                         required_aes = c("x",
-                                         "y",
-                                         "x1",
-                                         "y1"),
+                                         "y"),
                         setup_data = function(self, 
                                               data, 
                                               params) {
@@ -44,30 +44,36 @@ GeomBatlight <- ggproto("GeomBatlight",
                           print(coord)
                           coords <- coord$transform(data, 
                                                     panel_params)
-                          
-                          obj1 <- grid::segmentsGrob(x0 = coords$x,
-                                                     y0 = coords$y,
-                                                     x1 = coords$x1,
-                                                     y1 = coords$y1)
+                          obj1 <- grid::circleGrob(x = coords$x,
+                                                   y = coords$y,
+                                                   r = 1)
 
-                          obj2 <- grid::pointsGrob(x = coords$x,
+                          obj2 <- grid::segmentsGrob(x0 = coords$x,
+                                                     y0 = coords$y,
+                                                     x1 = coords$x + 1,
+                                                     y1 = coords$y + 1)
+
+                          obj3 <- grid::pointsGrob(x = coords$x,
                                                    y = coords$y,
                                                    pch = coords$shape,
                                                    gp = grid::gpar(col = coords$colour,
                                                                    fill = coords$fill))
+                          
                           grobTree(obj1,
-                                   obj2)
-
-                          # obj1 <- grob(geom_segment(aes(x = coords$x, 
+                                   obj2,
+                                   obj3)
+                          
+                          # OPTION 2 (doesn't work!):
+                          # obj1 <- grob(geom_segment(aes(x = coords$x,
                           #                               y = coords$y,
-                          #                               xend = coords$x1,
-                          #                               yend = coords$y1)))
+                          #                               xend = coords$x + 1,
+                          #                               yend = coords$y + 1)))
                           # obj2 <- grob(geom_point(aes(x = c(coords$x,
-                          #                                   coords$x1),
+                          #                                   coords$x + 1),
                           #                             y = c(coords$y,
-                          #                                   coords$y1))))
+                          #                                   coords$y + 1))))
                           # return(gList(obj1,
-                          #       obj2))
+                          #              obj2))
                           
                         })
 
@@ -89,10 +95,7 @@ geom_batlight <- function(mapping = NULL,
 }
 
 ggplot() + 
-  geom_point() +
   geom_batlight(aes(x = 0,
-                    y = 1,
-                    x1 = 2,
-                    y1 = 5)) +
-  coord_cartesian(xlim = c(0, 10),
-                  ylim = c(0, 10))
+                    y = 0)) +
+  coord_cartesian(xlim = c(-2, 10),
+                  ylim = c(-2, 10))
